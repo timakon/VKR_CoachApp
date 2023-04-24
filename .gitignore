@@ -1,0 +1,14 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Flutter
+build/
+.DS_Store
+.packages
+.pub-cache/
