@@ -1,3 +1,6 @@
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
 const User = require("../models/user");
 
 exports.getAllUsers = async (req, res) => {
@@ -27,15 +30,32 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-exports.addUser = async (req, res) => {
-  const newUser = new User(req.body);
-
+exports.register = async (req, res) => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const newUser = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: hashedPassword,
+    role: req.body.role,
+  });
   try {
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
     res.status(400).json("Error: " + error);
   }
+};
+
+exports.login = async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(400).send("Email or password is incorrect");
+
+  const validPass = await bcrypt.compare(req.body.password, user.password);
+  if (!validPass) return res.status(400).send("Username or password is incorrect");
+  console.log(user);
+
+  const token = jwt.sign({ _id: user._id }, "mysecretkey123!");
+  res.header("Authorization", token).send({ token: token, role: user.role, userId: user._id});
 };
 
 exports.updateUser = async (req, res) => {

@@ -14,6 +14,12 @@ const trainingSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  trainerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
 });
+
 
 module.exports = mongoose.model('Trainings', trainingSchema);

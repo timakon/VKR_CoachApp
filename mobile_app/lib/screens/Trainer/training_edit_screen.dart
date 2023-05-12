@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/models/training.dart';
+import 'package:my_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import '../providers/trainings_provider.dart';
+import '../../providers/trainings_provider.dart';
 import 'package:flutter/widgets.dart';
 
 class TrainingEditScreen extends StatefulWidget {
@@ -76,11 +77,14 @@ class _TrainingEditScreenState extends State<TrainingEditScreen> {
 
       print("widget ${widget.training.id}");
 
+      final trainerId = Provider.of<AuthProvider>(context, listen: false).userId;
+
       final data = {
         'title': _title ?? '',
         'dateTime':
             _dateTime?.toIso8601String() ?? DateTime.now().toIso8601String(),
         'userId': widget.training.clientId,
+        'trainerId': trainerId,
       };
 
       // Уберите условие, так как экран предназначен только для редактирования существующих тренировок

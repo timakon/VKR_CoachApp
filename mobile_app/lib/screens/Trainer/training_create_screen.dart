@@ -3,13 +3,13 @@ import 'package:my_app/models/client.dart';
 import 'package:my_app/providers/trainings_provider.dart';
 import 'package:my_app/providers/clients_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:my_app/providers/auth_provider.dart';
 
 class TrainingCreateScreen extends StatefulWidget {
   final DateTime? selectedDay;
   final String? clientId;
 
   TrainingCreateScreen({this.selectedDay, this.clientId});
-
 
   @override
   _TrainingCreateScreenState createState() => _TrainingCreateScreenState();
@@ -28,20 +28,25 @@ class _TrainingCreateScreenState extends State<TrainingCreateScreen> {
     }
     if (widget.clientId != null) {
       _selectedClient = Provider.of<ClientsProvider>(context, listen: false)
-        .getClientById(widget.clientId!);
+          .getClientById(widget.clientId!);
     }
   }
-  
 
   void _submitForm(BuildContext context) {
-    if (_titleController.text.isEmpty || _selectedDateTime == null || _selectedClient == null) {
+    if (_titleController.text.isEmpty ||
+        _selectedDateTime == null ||
+        _selectedClient == null) {
       return;
     }
+
+    final trainerId = Provider.of<AuthProvider>(context, listen: false).userId;
+    print(trainerId);
 
     final data = {
       'title': _titleController.text,
       'dateTime': _selectedDateTime!.toIso8601String(),
       'userId': _selectedClient!.id,
+      'trainerId': trainerId,
     };
 
     Provider.of<TrainingsProvider>(context, listen: false).addTraining(data);
@@ -167,5 +172,4 @@ class _TrainingCreateScreenState extends State<TrainingCreateScreen> {
       ),
     );
   }
-
 }

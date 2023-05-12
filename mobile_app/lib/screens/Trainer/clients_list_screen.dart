@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/clients_provider.dart';
-import '../screens/client_details_screen.dart';
+import '../../providers/clients_provider.dart';
+import './client_details_screen.dart';
 
 class ClientsListScreen extends StatelessWidget {
   @override

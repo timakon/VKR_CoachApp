@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/screens/training_create_screen.dart';
+import 'package:my_app/providers/auth_provider.dart';
+import 'package:my_app/screens/Trainer/training_create_screen.dart';
 import 'package:provider/provider.dart';
-import '../providers/clients_provider.dart';
-import '../models/client.dart';
-import '../screens/training_edit_screen.dart';
-import '../providers/trainings_provider.dart';
+import '../../providers/clients_provider.dart';
+import '../../models/client.dart';
+import '../../providers/trainings_provider.dart';
+import './training_edit_screen.dart';
+
 
 
 
@@ -18,11 +20,15 @@ class ClientDetailsScreen extends StatefulWidget {
 }
 
 class _ClientDetailsScreenState extends State<ClientDetailsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings();
+
+@override
+void initState() {
+  super.initState();
+  final trainerId = Provider.of<AuthProvider>(context, listen: false).userId;
+    if (trainerId != null) {
+    Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings(trainerId);
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +65,8 @@ class _ClientDetailsScreenState extends State<ClientDetailsScreen> {
                       ),
                     ).then((isUpdated) {
                             if (isUpdated != null && isUpdated) {
-                              Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings();
+                              final trainerId = Provider.of<AuthProvider>(context, listen: false).userId;
+                              Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings(trainerId!);
                             }
                           });
                   },

@@ -4,8 +4,13 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String _baseUrl = "http://10.0.2.2:5000";
 
-  Future<List<dynamic>> getAll(String endpoint) async {
-    final response = await http.get(Uri.parse("$_baseUrl/$endpoint"));
+  Future<List<dynamic>> getAll(String endpoint, {String? trainerId}) async {
+    final uri = Uri.parse("$_baseUrl/$endpoint").replace(
+      queryParameters: trainerId != null ? {'trainerId': trainerId} : null,
+    );
+
+    final response = await http.get(uri);
+
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -22,19 +27,38 @@ class ApiService {
     }
   }
 
-  // Future<dynamic> add(String endpoint, Map<String, dynamic> data) async {
-  //   final response = await http.post(
-  //     Uri.parse("$_baseUrl/$endpoint/add"),
-  //     headers: {'Content-Type': 'application/json'},
-  //     body: jsonEncode(data),
-  //   );
+  Future<dynamic> login(Map<String, dynamic> data) async {
+    print("data $data");
+    final response = await http.post(
+      Uri.parse("$_baseUrl/users/login"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
 
-  //   if (response.statusCode == 201) {
-  //     return jsonDecode(response.body);
-  //   } else {
-  //     throw Exception("Failed to add data");
-  //   }
-  // }
+    print("response ${response.body}");
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+          "Failed to login. Status code: ${response.statusCode}. Response body: ${response.body}");
+    }
+  }
+
+  Future<dynamic> register(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse("$_baseUrl/users/register"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+          "Failed to register. Status code: ${response.statusCode}. Response body: ${response.body}");
+    }
+  }
 
   Future<dynamic> add(String endpoint, Map<String, dynamic> data) async {
     final response = await http.post(

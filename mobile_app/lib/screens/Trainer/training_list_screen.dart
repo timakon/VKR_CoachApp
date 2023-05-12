@@ -1,15 +1,16 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:my_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../models/training.dart';
-import '../providers/trainings_provider.dart';
-import '../screens/training_edit_screen.dart';
+import '../../models/training.dart';
+import '../../providers/trainings_provider.dart';
+import './training_edit_screen.dart';
 import 'package:my_app/models/client.dart';
 import 'package:my_app/providers/clients_provider.dart';
 
-import 'training_create_screen.dart';
+import './training_create_screen.dart';
 
 class TrainingListScreen extends StatefulWidget {
   @override
@@ -45,11 +46,15 @@ class _TrainingListScreenState extends State<TrainingListScreen> {
     return trainingsByDate;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings();
+
+@override
+void initState() {
+  super.initState();
+  final trainerId = Provider.of<AuthProvider>(context, listen: false).userId;
+  if (trainerId != null) {
+    Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings(trainerId);
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +63,6 @@ class _TrainingListScreenState extends State<TrainingListScreen> {
 
     Map<DateTime, List<Training>> _trainingsByDate =
         _groupTrainingsByDate(trainingsData.trainings);
-
-    // print("============");
-    // print(_trainingsByDate);
 
     return SingleChildScrollView(
       child: Column(
@@ -125,7 +127,8 @@ class _TrainingListScreenState extends State<TrainingListScreen> {
                             '${clientsData.getClientName(training.clientId)} | ${training.title}'),
                         subtitle: Text(training.dateTime.toString()),
                         onTap: () {
-                          Navigator.of(context).push(
+                          Navigator.of(context)
+                              .push(
                             MaterialPageRoute(
                               builder: (context) => TrainingEditScreen(
                                 // trainingId: training.id,
@@ -133,9 +136,11 @@ class _TrainingListScreenState extends State<TrainingListScreen> {
                                 training: training,
                               ),
                             ),
-                          ).then((isUpdated) {
+                          )
+                              .then((isUpdated) {
                             if (isUpdated != null && isUpdated) {
-                              Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings();
+                              final trainerId = Provider.of<AuthProvider>(context, listen: false).userId;
+                              Provider.of<TrainingsProvider>(context, listen: false).fetchTrainings(trainerId!);
                             }
                           });
                         },

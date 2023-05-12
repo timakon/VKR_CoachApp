@@ -9,8 +9,8 @@ class TrainingsProvider with ChangeNotifier {
 
   final ApiService _apiService = ApiService();
 
-  Future<void> fetchTrainings() async {
-    final trainingsJson = await _apiService.getAll("trainings");
+  Future<void> fetchTrainings(String trainerId) async {
+    final trainingsJson = await _apiService.getAll("trainings", trainerId: trainerId);
     _trainings = trainingsJson.map((json) => Training.fromJson(json)).toList();
     notifyListeners();
   }
